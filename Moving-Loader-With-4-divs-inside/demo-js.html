@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0" />
+		<style>
+			body {
+				margin: 0;
+				padding: 0;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				height: 100vh;
+				background-color: #f0f0f0;
+			}
+
+			#container {
+				position: relative;
+				width: 100px;
+				height: 100px;
+				background-color: lightblue;
+				border-radius: 50%;
+				border-left: 5px solid green;
+				border-right: 5px solid blue;
+				border-bottom: 5px solid black;
+				border-top: 5px solid orange;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				animation: rotateContainer 1.5s infinite linear;
+			}
+
+			.div1,
+			.div2,
+			.div3,
+			.div4 {
+				height: 25px;
+				width: 25px;
+				background: red;
+				border: 1px solid black;
+				border-radius: 50%;
+				position: absolute;
+			}
+
+			.div1 {
+				top: 0;
+			}
+			.div2 {
+				bottom: 0;
+			}
+			.div3 {
+				left: 0;
+			}
+			.div4 {
+				right: 0;
+			}
+
+			.typewriter {
+				margin-top: 20px;
+				font-family: monospace;
+				font-size: 18px;
+				color: black;
+				white-space: nowrap;
+				overflow: hidden;
+				border-right: 2px solid black;
+				width: fit-content;
+			}
+
+			@keyframes rotateContainer {
+				0% {
+					transform: rotate(0deg);
+				}
+				100% {
+					transform: rotate(360deg);
+				}
+			}
+
+			@keyframes blink {
+				0%,
+				100% {
+					border-color: black;
+				}
+				50% {
+					border-color: transparent;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div id="loader-container"></div>
+		<button id="start">Start</button>
+		<button id="close">Close</button>
+
+		<script>
+			class Loader {
+				constructor(containerId, typewriterText, typingSpeed = 500) {
+					this.containerId = containerId;
+					this.typewriterText = typewriterText;
+					this.typingSpeed = typingSpeed;
+					this.index = 0;
+					this.loaderElement = null;
+					this.typingTextElement = null;
+					this.dotCount = 0;
+					this.maxDots = 3;
+					this.dotInterval = null;
+					this.startHandler = this.startLoader.bind(this);
+					this.closeHandler = this.stopLoader.bind(this);
+				}
+
+				createLoader() {
+					const loaderContainer = document.getElementById(this.containerId);
+
+					// Create main loader container
+					const container = document.createElement("div");
+					container.id = "container";
+
+					// Create spinning divs
+					const div1 = document.createElement("div");
+					div1.className = "div1";
+					const div2 = document.createElement("div");
+					div2.className = "div2";
+					const div3 = document.createElement("div");
+					div3.className = "div3";
+					const div4 = document.createElement("div");
+					div4.className = "div4";
+
+					container.appendChild(div1);
+					container.appendChild(div2);
+					container.appendChild(div3);
+					container.appendChild(div4);
+					loaderContainer.appendChild(container);
+
+					// Create typewriter text element
+					const typewriterDiv = document.createElement("div");
+					typewriterDiv.className = "typewriter";
+					const typingText = document.createElement("span");
+					typingText.id = "typing-text";
+					typewriterDiv.appendChild(typingText);
+					loaderContainer.appendChild(typewriterDiv);
+
+					this.loaderElement = loaderContainer;
+					this.typingTextElement = typingText;
+				}
+
+				startLoader() {
+					this.createLoader();
+					this.dotInterval = setInterval(() => this.updateTypingText(), this.typingSpeed);
+				}
+
+				updateTypingText() {
+					this.typingTextElement.innerHTML = this.typewriterText + ".".repeat(this.dotCount);
+					this.dotCount++;
+
+					if (this.dotCount > this.maxDots) {
+						this.dotCount = 0;
+					}
+				}
+
+				stopLoader() {
+					clearInterval(this.dotInterval);
+					if (this.loaderElement) {
+						this.loaderElement.innerHTML = ""; // Clear loader HTML content
+					}
+				}
+
+				addEventListeners() {
+					document.getElementById("start").addEventListener("click", this.startHandler);
+					document.getElementById("close").addEventListener("click", this.closeHandler);
+				}
+
+				removeEventListeners() {
+					document.getElementById("start").removeEventListener("click", this.startHandler);
+					document.getElementById("close").removeEventListener("click", this.closeHandler);
+				}
+			}
+
+			const loader = new Loader("loader-container", "Loading", 1000);
+			loader.addEventListeners();
+
+			// Example usage: Remove event listeners after some time or based on a condition
+			// setTimeout(() => loader.removeEventListeners(), 5000);
+		</script>
+	</body>
+</html>
